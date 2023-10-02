@@ -1,0 +1,20 @@
+interface Node {
+    id: ID!
+}
+
+type Query {
+    node(id: ID!): Node
+}
+
+type Todo implements Node @key(fields: "id") @extends {
+    id: ID! @external
+    owner: UserInfo
+}
+
+type UserInfo implements Node {
+    id: ID!
+    userName: String!
+    email: String!
+    firstName: String
+    lastName: String
+}

@@ -1,0 +1,80 @@
+scalar DateTime
+
+type Query {
+    todos(first: Int, after: String, last: Int, before: String, query: String): TodoConnection!
+    node(id: ID!): Node
+}
+
+type Mutation {
+    createTodo(input: CreateTodoInput!): CreateTodoPayload!
+    updateTodo(input: UpdateTodoInput!): UpdateTodoPayload!
+    updateTodoStatus(input: UpdateTodoStatusInput!): UpdateTodoPayload!
+    deleteTodo(id: ID!): DeleteTodoPayload!
+}
+
+interface Node {
+    id: ID!
+}
+
+type TodoConnection {
+    edges: [TodoEdges!]!
+    pageInfo: PageInfo
+}
+
+type PageInfo {
+    startCursor: String
+    endCursor: String
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+}
+
+type TodoEdges {
+    node: Todo!
+    cursor: String!
+}
+
+type Todo implements Node @key(fields: "id") {
+    id: ID!
+    title: String!
+    details: String
+    status: TodoStatus!
+    dueDate: DateTime
+    updateAt: DateTime!
+    createAt: DateTime!
+}
+
+enum TodoStatus {
+    todo
+    inprogress
+    done
+}
+
+type UpdateTodoPayload {
+    todo: Todo!
+}
+
+type CreateTodoPayload {
+    todo: Todo!
+}
+
+type DeleteTodoPayload {
+    deletedTodo: Todo!
+}
+
+input CreateTodoInput {
+    title: String!
+    details: String
+    dueDate: DateTime
+}
+
+input UpdateTodoInput {
+    id: ID!
+    title: String!
+    details: String
+    dueDate: DateTime
+}
+
+input UpdateTodoStatusInput {
+    id: ID!
+    status: TodoStatus!
+}
