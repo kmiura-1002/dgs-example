@@ -10,16 +10,21 @@ import com.netflix.dgs.codegen.generated.types.UpdateTodoStatusInput
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.InputArgument
+import dgs.example.services.ITodosService
 
 
 @DgsComponent
-class TodoMutation {
+class TodoMutation(
+    private val service: ITodosService
+) {
 
     @DgsData(parentType = DgsConstants.Mutation_TYPE, field = DgsConstants.MUTATION.CreateTodo)
     fun createTodo(
         @InputArgument(DgsConstants.MUTATION.CREATETODO_INPUT_ARGUMENT.Input) input: CreateTodoInput
     ): CreateTodoPayload {
-        TODO()
+        return CreateTodoPayload(
+            service.addTodo(input)
+        )
     }
 
     @DgsData(parentType = DgsConstants.Mutation_TYPE, field = DgsConstants.MUTATION.DeleteTodo)

@@ -1,7 +1,9 @@
+directive @Size(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message")
+on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 scalar DateTime
 
 type Query {
-    todos(first: Int, after: String, last: Int, before: String, query: String): TodoConnection!
+    todos(first: Int, after: String, last: Int, before: String, query: String): [Todo]!
     node(id: ID!): Node
 }
 
@@ -16,23 +18,6 @@ interface Node {
     id: ID!
 }
 
-type TodoConnection {
-    edges: [TodoEdges!]!
-    pageInfo: PageInfo
-}
-
-type PageInfo {
-    startCursor: String
-    endCursor: String
-    hasNextPage: Boolean!
-    hasPreviousPage: Boolean!
-}
-
-type TodoEdges {
-    node: Todo!
-    cursor: String!
-}
-
 type Todo implements Node @key(fields: "id") {
     id: ID!
     title: String!
@@ -41,6 +26,11 @@ type Todo implements Node @key(fields: "id") {
     dueDate: DateTime
     updateAt: DateTime!
     createAt: DateTime!
+    star: Star!
+}
+
+type Star {
+    count: Int!
 }
 
 enum TodoStatus {
@@ -62,7 +52,7 @@ type DeleteTodoPayload {
 }
 
 input CreateTodoInput {
-    title: String!
+    title: String! @Size(min : 3, max : 100)
     details: String
     dueDate: DateTime
 }
@@ -78,3 +68,5 @@ input UpdateTodoStatusInput {
     id: ID!
     status: TodoStatus!
 }
+
+

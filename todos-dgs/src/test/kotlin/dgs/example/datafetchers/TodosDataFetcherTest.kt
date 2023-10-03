@@ -2,10 +2,8 @@ package dgs.example.datafetchers
 
 import com.netflix.dgs.codegen.generated.client.TodosGraphQLQuery
 import com.netflix.dgs.codegen.generated.client.TodosProjectionRoot
-import com.netflix.dgs.codegen.generated.types.PageInfo
+import com.netflix.dgs.codegen.generated.types.Star
 import com.netflix.dgs.codegen.generated.types.Todo
-import com.netflix.dgs.codegen.generated.types.TodoConnection
-import com.netflix.dgs.codegen.generated.types.TodoEdges
 import com.netflix.dgs.codegen.generated.types.TodoStatus
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
@@ -34,28 +32,19 @@ class TodosDataFetcherTest {
     @BeforeEach
     fun before() {
         Mockito.`when`(todosService.todos()).thenAnswer {
-            TodoConnection(
-                listOf(
-                    TodoEdges(
-                        Todo(
-                            id = TodoId(1).nodeId(),
-                            title = "test title",
-                            details = "todo",
-                            status = TodoStatus.inprogress,
-                            dueDate = null,
-                            updateAt = OffsetDateTime.now(),
-                            createAt = OffsetDateTime.now(),
-                        ),
-                        TodoId(1).nodeId()
-                    )
-                ),
-                PageInfo(
-                    TodoId(1).nodeId(),
-                    TodoId(1).nodeId(),
-                    false,
-                    false
+            listOf(
+                Todo(
+                    id = TodoId(1).nodeId(),
+                    title = "test title",
+                    details = "todo",
+                    status = TodoStatus.inprogress,
+                    dueDate = null,
+                    updateAt = OffsetDateTime.now(),
+                    createAt = OffsetDateTime.now(),
+                    star = Star(0)
                 )
             )
+
         }
     }
 
@@ -65,14 +54,10 @@ class TodosDataFetcherTest {
             """
             {
                 todos {
-                    edges {
-                        node {
-                            title
-                        }
-                    }
+                    title
                 }
             }
-        """.trimIndent(), "data.todos.edges[*].node.title"
+        """.trimIndent(), "data.todos[*].title"
         )
 
         assertThat(titles).contains("test title")
@@ -82,11 +67,11 @@ class TodosDataFetcherTest {
     fun todos_use_client() {
         val graphQLQueryRequest = GraphQLQueryRequest(
             TodosGraphQLQuery.Builder().build(),
-            TodosProjectionRoot<Nothing, Nothing>().edges().node().title()
+            TodosProjectionRoot<Nothing, Nothing>().title()
         )
 
         val titles: List<String> =
-            dgsQueryExecutor.executeAndExtractJsonPath(graphQLQueryRequest.serialize(), "data.todos.edges[*].node.title")
+            dgsQueryExecutor.executeAndExtractJsonPath(graphQLQueryRequest.serialize(), "data.todos[*].title")
         assertThat(titles).containsExactly("test title")
     }
 }

@@ -1,6 +1,7 @@
 package dgs.example.services
 
 import com.netflix.dgs.codegen.generated.types.Node
+import com.netflix.dgs.codegen.generated.types.Star
 import com.netflix.dgs.codegen.generated.types.Todo
 import com.netflix.dgs.codegen.generated.types.TodoStatus
 import dgs.example.extensions.then
@@ -25,6 +26,7 @@ class NodeService : INodeService {
                 dueDate = null,
                 updateAt = OffsetDateTime.now(),
                 createAt = OffsetDateTime.now(),
+                star = Star(0)
             )
         )
     }
