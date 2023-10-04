@@ -11,6 +11,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.InputArgument
 import dgs.example.services.ITodosService
+import dgs.example.value.TodoId
 
 
 @DgsComponent
@@ -29,14 +30,20 @@ class TodoMutation(
 
     @DgsData(parentType = DgsConstants.Mutation_TYPE, field = DgsConstants.MUTATION.DeleteTodo)
     fun deleteTodo(@InputArgument id: Long): DeleteTodoPayload {
-        TODO()
+        val deletedTodo = service.deleteTodo(TodoId(id))
+        return DeleteTodoPayload(
+            deletedTodo
+        )
     }
 
     @DgsData(parentType = DgsConstants.Mutation_TYPE, field = DgsConstants.MUTATION.UpdateTodo)
     fun updateTodo(
         @InputArgument(DgsConstants.MUTATION.UPDATETODO_INPUT_ARGUMENT.Input) input: UpdateTodoInput
     ): UpdateTodoPayload {
-        TODO()
+
+        return UpdateTodoPayload(
+            service.updateTodo(input)
+        )
     }
 
     @DgsData(parentType = DgsConstants.Mutation_TYPE, field = DgsConstants.MUTATION.UpdateTodoStatus)
@@ -45,6 +52,8 @@ class TodoMutation(
             DgsConstants.MUTATION.UPDATETODOSTATUS_INPUT_ARGUMENT.Input
         ) input: UpdateTodoStatusInput
     ): UpdateTodoPayload {
-        TODO()
+        return UpdateTodoPayload(
+            service.updateStatus(input)
+        )
     }
 }

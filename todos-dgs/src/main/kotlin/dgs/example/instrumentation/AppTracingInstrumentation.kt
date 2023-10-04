@@ -2,6 +2,7 @@ package dgs.example.instrumentation
 
 import dgs.example.extensions.logger.logger
 import graphql.ExecutionResult
+import graphql.execution.DataFetcherResult
 import graphql.execution.instrumentation.InstrumentationContext
 import graphql.execution.instrumentation.InstrumentationState
 import graphql.execution.instrumentation.SimplePerformantInstrumentation
@@ -58,6 +59,10 @@ class AppTracingInstrumentation : SimplePerformantInstrumentation() {
             } else {
                 val totalTime = System.currentTimeMillis() - startTime
                 logger.info("Datafetcher '$dataFetcherName': ${totalTime}ms")
+            }
+
+            if(result is DataFetcherResult<*> && result.errors.isNotEmpty()){
+                result.errors.forEach { logger.warn("${it.message} ${it.errorType} ${it.locations}") }
             }
 
             result
